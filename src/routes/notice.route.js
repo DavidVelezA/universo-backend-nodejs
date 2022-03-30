@@ -7,8 +7,8 @@ const router = express.Router();
 
 //rutas de api
 router.post('/notice', NoticeController.save);
-router.get('/notice',  NoticeController.getAll);
-router.get('/notice/:id',  NoticeController.getById);
+router.get('/notice/:page?',  NoticeController.getAllPagination);
+router.get('/notice/id/:id',  NoticeController.getById);
 router.put('/notice/:id', NoticeController.update);
 router.delete('/notice/:id', NoticeController.delete);
 

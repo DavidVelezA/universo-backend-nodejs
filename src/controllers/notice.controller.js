@@ -42,14 +42,65 @@ const controller = {
       .send({ status: response.status, message: response.message });
   },
 
-  getAll: (req, res) => {
-    Notice.find().exec((err, notices) => {
-      return res.status(200).send({
-        status: "success",
-        notices,
-      });
+
+
+  getAllPagination: (req, res) => {
+
+    let response = {
+      code: 200,
+      status: "success",
+      message: "Datos mostrados",
+    };
+
+    let page = 1;
+    //cargar la libreria de paginacion en la clase a nivel del modelo
+
+    // recoger la pagina actual
+    if (req.params.page == null ||
+        req.params.page == undefined ||
+        req.params.page == 0 ||
+        req.params.page == "0" ||
+        !req.params.page) {
+
+         page = 1;
+    } else {
+         page = parseInt(req.params.page);
+    }
+
+    // indicar las opcions de paginacion
+    /*sort: 
+    -1 para ordenar de mas nuevo a mas viejo
+    1 para ordenar de mas nuevo a mas nuevo
+    populate: 
+    */
+    let options = {
+        sort: { date: -1 },
+        limit: 8,
+        page: page
+
+    };
+
+    // find paginado
+    Notice.paginate({}, options, (err, notices) => {
+
+        if (err || !notices ) {          
+            response.code = 500;
+            response.status = "error";
+            response.message = "Error al hacer la consulta";
+
+        }
+
+        return res.status(response.code).send({
+            status: response.status,
+            message: response.message,
+            notices: notices.docs,
+            totalDocs: notices.totalDocs,
+            totalPages: notices.totalPages
+
+        });
     });
-  },
+},
+
 
   getById: (req, res) => {
     const { id } = req.params;
